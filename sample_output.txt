@@ -1,115 +1,14 @@
-TASK 2 - Finite automata for input validation
-------------------------------------------------------------------------------
-
-[pin]
-  input                     class symbols             result
-  '1234'                    dddd                      Accept
-  '0000'                    dddd                      Accept
-  '0071'                    dddd                      Accept
-  '9876'                    dddd                      Accept
-  '4501'                    dddd                      Accept
-  '123'                     ddd                       Reject
-  '12345'                   ddddd                     Reject
-  '12a4'                    ddxd                      Reject
-  ε                         ε                         Reject
-  '12 4'                    ddxd                      Reject
-
-[lock]
-  input                     class symbols             result
-  'C'                       C                         Accept
-  'WC'                      WC                        Accept
-  'WWC'                     WWC                       Accept
-  'CW'                      CW                        Accept
-  'WWCWW'                   WWCWW                     Accept
-  ε                         ε                         Reject
-  'W'                       W                         Reject
-  'WW'                      WW                        Reject
-  'WWW'                     WWW                       Reject
-  'WWWC'                    WWWC                      Reject
-
-[password]
-  input                     class symbols             result
-  'Pass@123'                ULLLSDDD                  Accept
-  'Secure#9'                ULLLLLSD                  Accept
-  'Abcdef1!'                ULLLLLDS                  Accept
-  '9$Kitchen'               DSULLLLLL                 Accept
-  'HELLO@2026'              UUUUUSDDDD                Accept
-  'Pa@1'                    ULSD                      Reject
-  'password1!'              LLLLLLLLDS                Reject
-  'PASSWORD!!'              UUUUUUUUSS                Reject
-  'Password123'             ULLLLLLLDDD               Reject
-  ε                         ε                         Reject
-
-[email]
-  input                     class symbols             result
-  'student@srmist.edu.in'   AAAAAAA@AAAAAA.AAA.AA     Accept
-  'john.doe@yahoo.com'      AAAA.AAA@AAAAA.AAA        Accept
-  'user123@mail2.org'       AAAANNN@AAAAN.AAA         Accept
-  'a.b.c@x.io'              A.A.A@A.AA                Accept
-  'ravi99@abc.co.in'        AAAANN@AAA.AA.AA          Accept
-  '.ravi@gmail.com'         .AAAA@AAAAA.AAA           Reject
-  'ravi..k@gmail.com'       AAAA..A@AAAAA.AAA         Reject
-  'ravi@gmail'              AAAA@AAAAA                Reject
-  'ravi@@gmail.com'         AAAA@@AAAAA.AAA           Reject
-  'ravi@gmail.c'            AAAA@AAAAA.A              Reject
-
-Password product DFA: 60 reachable states (9 x 2 x 2 x 2 = 72 in total)
-
-TASK 3 - Pushdown automata and CFGs
-------------------------------------------------------------------------------
-
-[P1 Balanced parentheses]  type: DPDA, acceptance by final state
-  ε                   Accept
-  '()'                Accept
-  '(())'              Accept
-  '()()'              Accept
-  '(()())'            Accept
-  '('                 Reject
-  ')'                 Reject
-  ')('                Reject
-  '(()'               Reject
-  '())('              Reject
-
-[P2 Arithmetic expressions]  type: NPDA, acceptance by empty stack
-  'id'                Accept
-  'id+id'             Accept
-  'id*id+id'          Accept
-  '(id+id)*id'        Accept
-  '((id))'            Accept
-  'id+'               Reject
-  '+id'               Reject
-  'id id'             Reject
-  '(id+id'            Reject
-  'id*()'             Reject
-
-[P3 Palindrome w c w^R]  type: DPDA, acceptance by final state
-  'c'                 Accept
-  'aca'               Accept
-  'bcb'               Accept
-  'abcba'             Accept
-  'aabcbaa'           Accept
-  ε                   Reject
-  'acb'               Reject
-  'abcab'             Reject
-  'abcb'              Reject
-  'acaa'              Reject
-
-[P4 Palindrome w w^R (NPDA)]  type: NPDA, acceptance by final state
-  ε                   Accept
-  'aa'                Accept
-  'abba'              Accept
-  'baab'              Accept
-  'abbbba'            Accept
-  'a'                 Reject
-  'ab'                Reject
-  'aba'               Reject
-  'abab'              Reject
-  'aabb'              Reject
-
-Ambiguity check - number of parse trees
-  expression            G2 (ambiguous)    G2' (revised)
-  id+id*id              2                 1
-  id+id+id              2                 1
-  id*id+id*id           5                 1
-  (id+id)*id            1                 1
-  id+id*id+id           5                 1
+LoopGuard - infinite-loop detection within the limits of computability
+======================================================================================================================
+loop                          verdict      check             reason
+----------------------------------------------------------------------------------------------------------------------
+L1 bounded for-loop           TERMINATES   syntactic bound   fixed bound: range(1000) runs exactly 1000 iterations
+L2 countdown by 3             TERMINATES   linear ranking    ranking function r = x - c drops by 3 per iteration; exits after 4 iterations
+L3 wrong direction            LOOPS        linear ranking    'x' moves away from the bound (d = +1), so the guard stays true forever
+L4 forgotten update           LOOPS        linear ranking    'i' never changes inside the loop, so the guard stays true forever
+L5 binary search (bug)        LOOPS        cycle detection   state repeated: iteration 2 = iteration 3 (cycle length 1)
+L6 binary search (fixed)      TERMINATES   bounded run       loop exited after 2 iterations
+L7 traffic-light controller   LOOPS        cycle detection   state repeated: iteration 0 = iteration 3 (cycle length 3)
+L8 skip zero, 16-bit          LOOPS        cycle detection   state repeated: iteration 0 = iteration 32768 (cycle length 32768)
+L9 skip zero, unbounded       UNKNOWN      step budget       no exit and no repeated state within 100,000 iterations
+L10 odd perfect number        UNKNOWN      step budget       no exit and no repeated state within 5,000 iterations
